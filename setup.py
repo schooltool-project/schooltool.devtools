@@ -40,7 +40,7 @@ setup(
     long_description="""A set of tools that helps when developing schooltool.
     Like html coverage report generation scripts, i18n information extraction
     utilites and etc.""",
-    version="2007-dev",
+    version="0.1",
     url='http://www.schooltool.org',
     license="GPL",
     maintainer="SchoolTool development team",
@@ -57,4 +57,10 @@ setup(
     install_requires=['schooltool'],
     dependency_links=['http://ftp.schooltool.org/schooltool/eggs/',
                       'http://download.zope.org/distribution/'],
+    entry_points="""
+    [console_scripts]
+    i18nextract = stdevtools.i18nextract:i18nextract
+    coverage_reports = stdevtools.coverage_reports:main
+    runfdoctests = stdevtools.runfdoctests:main
+    """,
     include_package_data=True)
