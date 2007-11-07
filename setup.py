@@ -35,12 +35,12 @@ from setuptools import setup, find_packages
 
 # Setup STDevTools
 setup(
-    name="stdevtools",
+    name="schooltool.devtools",
     description="SchoolTool development tools.",
     long_description="""A set of tools that helps when developing schooltool.
     Like html coverage report generation scripts, i18n information extraction
     utilites and etc.""",
-    version="0.1",
+    version="0.2dev",
     url='http://www.schooltool.org',
     license="GPL",
     maintainer="SchoolTool development team",
@@ -54,13 +54,13 @@ setup(
     "Programming Language :: Zope"],
     package_dir={'': 'src'},
     packages=find_packages('src'),
-    install_requires=['schooltool'],
-    dependency_links=['http://ftp.schooltool.org/schooltool/eggs/',
-                      'http://download.zope.org/distribution/'],
+    install_requires=['zope.testing',
+                      'zope.app.locales',
+                      'setuptools'],
     entry_points="""
     [console_scripts]
-    i18nextract = stdevtools.i18nextract:i18nextract
-    coverage_reports = stdevtools.coverage_reports:main
-    runfdoctests = stdevtools.runfdoctests:main
+    i18nextract = schooltool.devtools.i18nextract:i18nextract
+    coverage_reports = schooltool.devtools.coverage_reports:main
+    runfdoctests = schooltool.devtools.runfdoctests:main
     """,
     include_package_data=True)
