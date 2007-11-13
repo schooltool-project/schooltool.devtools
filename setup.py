@@ -40,7 +40,7 @@ setup(
     long_description="""A set of tools that helps when developing schooltool.
     Like html coverage report generation scripts, i18n information extraction
     utilites and etc.""",
-    version="0.3dev",
+    version="0.4dev",
     url='http://www.schooltool.org',
     license="GPL",
     maintainer="SchoolTool development team",
