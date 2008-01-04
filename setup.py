@@ -39,7 +39,7 @@ setup(
     description="SchoolTool development tools.",
     long_description="""A set of tools that helps when developing schooltool.
     Like i18n information extraction utilites.""",
-    version="0.4dev",
+    version="0.5dev",
     url='http://www.schooltool.org',
     license="GPL",
     maintainer="SchoolTool development team",
