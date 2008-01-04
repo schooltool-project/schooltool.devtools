@@ -19,7 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 """
-SchoolTool Lyceum plugin setup script.
+SchoolTool DevTools setup script
 """
 
 
@@ -38,8 +38,7 @@ setup(
     name="schooltool.devtools",
     description="SchoolTool development tools.",
     long_description="""A set of tools that helps when developing schooltool.
-    Like html coverage report generation scripts, i18n information extraction
-    utilites and etc.""",
+    Like i18n information extraction utilites.""",
     version="0.4dev",
     url='http://www.schooltool.org',
     license="GPL",
@@ -60,7 +59,6 @@ setup(
     entry_points="""
     [console_scripts]
     i18nextract = schooltool.devtools.i18nextract:i18nextract
-    coverage_reports = schooltool.devtools.coverage_reports:main
     runfdoctests = schooltool.devtools.runfdoctests:main
     """,
     include_package_data=True)
