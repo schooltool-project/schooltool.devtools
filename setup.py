@@ -33,13 +33,18 @@ if sys.version_info < (2, 4):
 import os
 from setuptools import setup, find_packages
 
+version = open("version.txt").read().strip()
+if version.endswith("dev"):
+    bzrversion = os.popen('bzr revno').read().strip()
+    version += "_r" + bzrversion
+
 # Setup STDevTools
 setup(
     name="schooltool.devtools",
     description="SchoolTool development tools.",
     long_description="""A set of tools that helps when developing schooltool.
     Like i18n information extraction utilites.""",
-    version="0.5dev",
+    version=version,
     url='http://www.schooltool.org',
     license="GPL",
     maintainer="SchoolTool development team",
