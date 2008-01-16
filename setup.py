@@ -33,10 +33,10 @@ if sys.version_info < (2, 4):
 import os
 from setuptools import setup, find_packages
 
-version = open("version.txt").read().strip()
-if version.endswith("dev"):
-    bzrversion = os.popen('bzr revno').read().strip()
-    version += "_r" + bzrversion
+if os.path.exists("version.txt"):
+    version = open("version.txt").read().strip()
+else:
+    version = open("version.txt.in").read().strip()
 
 # Setup STDevTools
 setup(
