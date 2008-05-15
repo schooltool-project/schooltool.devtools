@@ -50,14 +50,14 @@ move-release:
 
 .PHONY: coverage
 coverage: build
-	test -d coverage || rm -rf coverage
+	rm -rf coverage
 	bin/test -u --coverage=coverage
 	mv parts/test/coverage .
-	@cd coverage && ls | grep -v tests | xargs grep -c '^>>>>>>' | grep -v ':0$$'
+	@cd coverage && ls | grep -v tests | xargs grep -c '^>>>>>>' | grep -v ':0$$' | cat
 
 .PHONY: coverage-reports-html
 coverage-reports-html:
-	test -d coverage/reports || rm -rf coverage/reports
+	rm -rf coverage/reports
 	mkdir coverage/reports
 	bin/coverage
 	ln -s schooltool.devtools.html coverage/reports/index.html
