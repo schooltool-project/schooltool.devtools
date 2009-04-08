@@ -73,22 +73,30 @@ class POTMaker(extract.POTMaker):
         return "SchoolTool Version %s" % version
 
 
-def write_pot(output_file, path, domain, base_dir, site_zcml):
+def write_pot(output_file, eggs, domain, zcml_path, site_zcml):
     # Create the POT
-    maker = POTMaker(output_file, path)
-    maker.add(py_strings(path, domain, verify_domain=True), base_dir)
-    maker.add(extract.zcml_strings(path, domain, site_zcml=site_zcml), base_dir)
-    maker.add(extract.tal_strings(path, domain), base_dir)
+    base_dir = os.getcwd()
+    maker = POTMaker(output_file, here)
+    for egg in eggs:
+        path = list(pkg_resources.require(egg))[0].location
+        first_module = egg.split('.')[0]
+        path = os.path.join(path, first_module)
+        maker.add(py_strings(path, domain, verify_domain=True), base_dir)
+        maker.add(extract.tal_strings(path, domain), base_dir)
+    if site_zcml is not None:
+        maker.add(extract.zcml_strings(base_dir, domain, site_zcml=site_zcml), base_dir)
     maker.write()
 
 def parse_args(argv):
     """Parse the command line arguments"""
     parser = optparse.OptionParser(usage="usage: %prog [options]")
     # XXX ! separate these
-    parser.add_option("--egg", dest="egg", default="schooltool",
+    parser.add_option("--egg", dest="egg", default=[], action="append",
                       help="The egg that contains files to be extracted")
     parser.add_option("--domain", dest="domain", default=None,
                       help="The domain that should be extracted")
+    parser.add_option("--zcml-egg", dest="zcml_egg", default=None,
+                      help="Egg that contains the ZCML")
     parser.add_option("--zcml", dest="zcml", default=None,
                       help="ZCML file to start the extraction")
     parser.add_option("--output-file", dest="output_file", default=None,
@@ -96,7 +104,9 @@ def parse_args(argv):
     options, args = parser.parse_args(argv)
     assert len(args) == 1
     assert options.domain is not None
-    assert options.zcml is not None
+    if options.zcml_egg or options.zcml:
+        assert options.zcml_egg is not None
+        assert options.zcml is not None
     assert options.output_file is not None
     assert options.egg is not None
     return options
@@ -105,9 +115,11 @@ def parse_args(argv):
 def i18nextract():
     here = os.path.abspath(os.path.curdir)
     options = parse_args(sys.argv)
-    path = list(pkg_resources.require(options.egg))[0].location
-    base_dir = os.path.abspath(os.path.join(path, ".."))
     output_file = os.path.abspath(options.output_file)
-    zcml_path = os.path.join(path, options.zcml)
-    write_pot(output_file, path, options.domain, base_dir, zcml_path)
+    zcml_path = None
+    site_zcml = None
+    if options.zcml_egg or options.zcml:
+        zcml_path = list(pkg_resources.require(options.zcml_egg))[0].location
+        site_zcml = os.path.join(zcml_path, options.zcml)
+    write_pot(output_file, options.egg, options.domain, zcml_path, site_zcml)
     print 'Extracted %s' % output_file
