@@ -21,6 +21,10 @@ bootstrap:
 buildout:
 	bin/buildout
 
+.PHONY: bzrupdate
+bzrupdate:
+	bzr up
+
 .PHONY: update
 update: build
 	bin/buildout -n
