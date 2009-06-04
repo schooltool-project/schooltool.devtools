@@ -23,7 +23,7 @@ buildout:
 
 .PHONY: bzrupdate
 bzrupdate:
-	bzr up
+	bzr update -q
 
 .PHONY: update
 update: build
@@ -50,7 +50,7 @@ release:
 
 .PHONY: move-release
 move-release:
-	 mv dist/schooltool.devtools-*.tar.gz /home/ftp/pub/schooltool/releases/nightly
+	mv dist/schooltool.devtools-*.tar.gz /home/ftp/pub/schooltool/releases/nightly
 
 .PHONY: coverage
 coverage: build
@@ -65,6 +65,14 @@ coverage-reports-html:
 	mkdir coverage/reports
 	bin/coverage
 	ln -s schooltool.devtools.html coverage/reports/index.html
+
+.PHONY: clean
+clean:
+	rm -rf bin develop-eggs parts python
+	rm -rf build dist
+	rm -f .installed.cfg
+	rm -f ID TAGS tags
+	find . -name '*.py[co]' -delete
 
 .PHONY: ubuntu-environment
 ubuntu-environment:

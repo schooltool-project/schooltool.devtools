@@ -1,1 +1,10 @@
 *.egg-info
+./.installed.cfg
+./bin/
+./coverage/
+./develop-eggs/
+./parts/
+./python/
+./ID
+./TAGS
+./tags
