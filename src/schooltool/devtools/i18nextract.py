@@ -73,7 +73,7 @@ class POTMaker(extract.POTMaker):
         return "SchoolTool Version %s" % version
 
 
-def write_pot(output_file, eggs, domain, zcml_path, site_zcml):
+def write_pot(output_file, eggs, domain, site_zcml):
     # Create the POT
     base_dir = os.getcwd()
     maker = POTMaker(output_file, here)
@@ -104,11 +104,13 @@ def parse_args(argv):
     options, args = parser.parse_args(argv)
     assert len(args) == 1
     assert options.domain is not None
-    if options.zcml_egg or options.zcml:
-        assert options.zcml_egg is not None
-        assert options.zcml is not None
     assert options.output_file is not None
     assert options.egg is not None
+    if options.zcml:
+        if options.zcml_egg is None and len(options.egg) == 1:
+            options.zcml_egg = options.egg[0]
+        else:
+            assert options.zcml_egg is not None
     return options
 
 
@@ -116,10 +118,9 @@ def i18nextract():
     here = os.path.abspath(os.path.curdir)
     options = parse_args(sys.argv)
     output_file = os.path.abspath(options.output_file)
-    zcml_path = None
     site_zcml = None
-    if options.zcml_egg or options.zcml:
+    if options.zcml:
         zcml_path = list(pkg_resources.require(options.zcml_egg))[0].location
         site_zcml = os.path.join(zcml_path, options.zcml)
-    write_pot(output_file, options.egg, options.domain, zcml_path, site_zcml)
+    write_pot(output_file, options.egg, options.domain, site_zcml)
     print 'Extracted %s' % output_file
