@@ -65,6 +65,7 @@ setup(
     "Programming Language :: Zope"],
     package_dir={'': 'src'},
     packages=find_packages('src'),
+    namespace_packages=["schooltool"],
     install_requires=['zope.testing',
                       'zope.app.locales',
                       'setuptools'],
