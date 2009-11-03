@@ -1,0 +1,17 @@
+=======
+CHANGES
+=======
+
+0.5.2 (2009-10-28)
+------------------
+
+- Use python2.5 by default
+- Make `buildout.cfg` extend SchoolTool KGS (based on Zope 3.4 KGS)
+- Add tags and coverage support to buildout
+- `i18nextract --egg PACKAGE ...` now supports multiple eggs
+
+
+0.5.1 (2008-04-02)
+------------------
+
+- Initial release.

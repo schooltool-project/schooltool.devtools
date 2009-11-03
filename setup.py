@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
 # SchoolTool - common information systems platform for school administration
-# Copyright (c) 2005    Shuttleworth Foundation,
-#                       Brian Sutherland
+# Copyright (c) 2007,2008,2009    Shuttleworth Foundation,
+#                                 Ignas Mikalajunas
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -38,12 +38,19 @@ if os.path.exists("version.txt"):
 else:
     version = open("version.txt.in").read().strip()
 
-# Setup STDevTools
+def read(*rnames):
+    text = open(os.path.join(os.path.dirname(__file__), *rnames)).read()
+    return text
+
+# Setup SchoolTool DevTools
 setup(
     name="schooltool.devtools",
     description="SchoolTool development tools.",
-    long_description="""A set of tools that helps when developing schooltool.
-    Like i18n information extraction utilites.""",
+    long_description=(
+        read('README.txt')
+        + '\n\n' +
+        read('CHANGES.txt')
+        ),
     version=version,
     url='http://www.schooltool.org',
     license="GPL",
