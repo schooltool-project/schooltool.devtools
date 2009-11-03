@@ -17,8 +17,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 """
-Customization of Zope's message string extraction module for schooltool and
-schoolbell.
+Customization of Zope's message string extraction module for SchoolTool
 
 $Id$
 """
@@ -26,8 +25,6 @@ import os
 import sys
 import optparse
 import pkg_resources
-
-from zope.app.locales.extract import py_strings
 
 _import_chickens = {}, {}, ("*",) # dead chickens needed by __import__
 
@@ -66,12 +63,11 @@ msgstr ""
 
 """
 
-version = "SVN"
+version = "development"
 class POTMaker(extract.POTMaker):
 
     def _getProductVersion(self):
-        return "SchoolTool Version %s" % version
-
+        return "SchoolTool %s" % version
 
 def write_pot(output_file, eggs, domain, site_zcml):
     # Create the POT
@@ -81,7 +77,7 @@ def write_pot(output_file, eggs, domain, site_zcml):
         path = list(pkg_resources.require(egg))[0].location
         first_module = egg.split('.')[0]
         path = os.path.join(path, first_module)
-        maker.add(py_strings(path, domain, verify_domain=True), base_dir)
+        maker.add(extract.py_strings(path, domain, verify_domain=True), base_dir)
         maker.add(extract.tal_strings(path, domain), base_dir)
     if site_zcml is not None:
         maker.add(extract.zcml_strings(base_dir, domain, site_zcml=site_zcml), base_dir)
