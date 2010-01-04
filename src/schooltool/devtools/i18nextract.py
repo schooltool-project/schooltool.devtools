@@ -63,25 +63,78 @@ msgstr ""
 
 """
 
+
+class STPOTEntry(extract.POTEntry):
+
+    def __init__(self, *args, **kw):
+        super(STPOTEntry, self).__init__(*args, **kw)
+        self._locations = []
+
+    def addLocationComment(self, filename, line):
+        self._locations.append((filename, line))
+        super(STPOTEntry, self).addLocationComment(filename, line)
+
+    def __cmp__(self, other):
+        return cmp((self._locations, self.msgid),
+                   (other._locations, other.msgid))
+
+
 version = "development"
-class POTMaker(extract.POTMaker):
+class STPOTMaker(extract.POTMaker):
 
     def _getProductVersion(self):
         return "SchoolTool %s" % version
 
+    def add(self, strings, base_dir=None):
+        for msgid, locations in strings.items():
+            if msgid == '':
+                continue
+            if msgid not in self.catalog:
+                self.catalog[msgid] = STPOTEntry(msgid)
+
+            for filename, lineno in locations:
+                if base_dir is not None:
+                    filename = filename.replace(base_dir, '')
+                self.catalog[msgid].addLocationComment(filename, lineno)
+
+
+def update_catalog(strings, other, location_prefix=None):
+    for msg, locations in other.items():
+        if location_prefix:
+            locations = [
+                (filename.replace(location_prefix, ''), lineno)
+                for filename, lineno in locations]
+        if msg not in strings:
+            strings[msg] = sorted(locations)
+        else:
+            strings[msg] = sorted(set(strings[msg] + locations))
+
+
 def write_pot(output_file, eggs, domain, site_zcml):
-    # Create the POT
-    base_dir = os.getcwd()
-    maker = POTMaker(output_file, here)
+    maker = STPOTMaker(output_file, here)
+    catalog = {}
     for egg in eggs:
-        path = list(pkg_resources.require(egg))[0].location
+        src_path = list(pkg_resources.require(egg))[0].location
+        # XXX: temporary egg/zcml base dir consistency hack
+        base_dir = src_path
+        if os.path.basename(base_dir) == 'src':
+            base_dir = os.path.split(base_dir)[0]
         first_module = egg.split('.')[0]
-        path = os.path.join(path, first_module)
-        maker.add(extract.py_strings(path, domain, verify_domain=True), base_dir)
-        maker.add(extract.tal_strings(path, domain), base_dir)
+        path = os.path.join(src_path, first_module)
+        update_catalog(
+            catalog, extract.py_strings(path, domain, verify_domain=True),
+            location_prefix=base_dir)
+        update_catalog(
+            catalog, extract.tal_strings(path, domain),
+            location_prefix=base_dir)
     if site_zcml is not None:
-        maker.add(extract.zcml_strings(base_dir, domain, site_zcml=site_zcml), base_dir)
+        base_dir = os.getcwd()
+        update_catalog(
+            catalog, extract.zcml_strings(base_dir, domain, site_zcml=site_zcml),
+            location_prefix=base_dir)
+    maker.add(catalog)
     maker.write()
+
 
 def parse_args(argv):
     """Parse the command line arguments"""
