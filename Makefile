@@ -33,6 +33,14 @@ update: bzrupdate
 test: build
 	bin/test -u
 
+.PHONY: ftest
+ftest: build
+	bin/test -f
+
+.PHONY: testall
+testall: build
+	bin/test --at-level 2
+
 .PHONY: release
 release: bin/buildout
 	echo -n `cat version.txt.in`_r`bzr revno` > version.txt
@@ -57,6 +65,21 @@ coverage-reports-html coverage/reports:
 	mkdir coverage/reports
 	bin/coverage coverage coverage/reports
 	ln -s $(PACKAGE).html coverage/reports/index.html
+
+.PHONY: ftest-coverage
+ftest-coverage: build
+	test -d parts/test/ftest-coverage && ! test -d ftest-coverage && mv parts/test/ftest-coverage . || true
+	rm -rf ftest-coverage
+	bin/test --at-level 2 -f --coverage=ftest-coverage
+	mv parts/test/ftest-coverage .
+
+.PHONY: ftest-coverage-reports-html
+ftest-coverage-reports-html ftest-coverage/reports:
+	test -d parts/test/ftest-coverage && ! test -d ftest-coverage && mv parts/test/ftest-coverage . || true
+	rm -rf ftest-coverage/reports
+	mkdir ftest-coverage/reports
+	bin/coverage ftest-coverage ftest-coverage/reports
+	ln -s $(PACKAGE).html ftest-coverage/reports/index.html
 
 .PHONY: clean
 clean:
