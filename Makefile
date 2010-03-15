@@ -59,12 +59,21 @@ coverage: build
 	mv parts/test/coverage .
 
 .PHONY: coverage-reports-html
-coverage-reports-html coverage/reports:
+coverage-reports-html coverage/reports: build
 	test -d parts/test/coverage && ! test -d coverage && mv parts/test/coverage . || true
 	rm -rf coverage/reports
 	mkdir coverage/reports
 	bin/coverage coverage coverage/reports
 	ln -s $(PACKAGE).html coverage/reports/index.html
+
+.PHONY: publish-coverage-reports
+publish-coverage-reports: coverage/reports
+	@test -n "$(DESTDIR)" || { echo "Please specify DESTDIR"; exit 1; }
+	cp -r coverage/reports $(DESTDIR).new
+	chmod -R a+rX $(DESTDIR).new
+	rm -rf $(DESTDIR).old
+	mv $(DESTDIR) $(DESTDIR).old || true
+	mv $(DESTDIR).new $(DESTDIR)
 
 .PHONY: ftest-coverage
 ftest-coverage: build
@@ -74,12 +83,21 @@ ftest-coverage: build
 	mv parts/test/ftest-coverage .
 
 .PHONY: ftest-coverage-reports-html
-ftest-coverage-reports-html ftest-coverage/reports:
+ftest-coverage-reports-html ftest-coverage/reports: build
 	test -d parts/test/ftest-coverage && ! test -d ftest-coverage && mv parts/test/ftest-coverage . || true
 	rm -rf ftest-coverage/reports
 	mkdir ftest-coverage/reports
 	bin/coverage ftest-coverage ftest-coverage/reports
 	ln -s $(PACKAGE).html ftest-coverage/reports/index.html
+
+.PHONY: publish-ftest-coverage-reports
+publish-ftest-coverage-reports: ftest-coverage/reports
+	@test -n "$(DESTDIR)" || { echo "Please specify DESTDIR"; exit 1; }
+	cp -r ftest-coverage/reports $(DESTDIR).new
+	chmod -R a+rX $(DESTDIR).new
+	rm -rf $(DESTDIR).old
+	mv $(DESTDIR) $(DESTDIR).old || true
+	mv $(DESTDIR).new $(DESTDIR)
 
 .PHONY: clean
 clean:
