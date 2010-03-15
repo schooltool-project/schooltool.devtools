@@ -18,11 +18,10 @@
 #
 """
 Customization of Zope's message string extraction module for SchoolTool
-
-$Id$
 """
 import os
 import sys
+import time
 import optparse
 import pkg_resources
 
@@ -31,8 +30,8 @@ _import_chickens = {}, {}, ("*",) # dead chickens needed by __import__
 here = os.path.abspath(os.path.dirname(__file__))
 
 from zope.app.locales import extract
-# Monkey patch the Zope3 translation extraction machinery
-extract.pot_header = """\
+
+pot_header = """\
 # SchoolTool - common information systems platform for school administration
 # Copyright (c) 2007    Shuttleworth Foundation
 #
@@ -57,8 +56,8 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\\n"
 "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\\n"
 "MIME-Version: 1.0\\n"
-"Content-Type: text/plain; charset=%(charset)s\\n"
-"Content-Transfer-Encoding: %(encoding)s\\n"
+"Content-Type: text/plain; charset=UTF-8\\n"
+"Content-Transfer-Encoding: 8bit\\n"
 "Generated-By: i18nextract.py\\n"
 
 """
@@ -96,6 +95,23 @@ class STPOTMaker(extract.POTMaker):
                 if base_dir is not None:
                     filename = filename.replace(base_dir, '')
                 self.catalog[msgid].addLocationComment(filename, lineno)
+
+    def write(self):
+        "Overriden to write date in the correct format"
+        file = open(self._output_filename, 'w')
+        ztime = time.strftime('%Y-%m-%d %H:%M%z')
+        file.write(pot_header % {'time':     ztime,
+                                 'version':  self._getProductVersion()})
+
+        # Sort the catalog entries by filename
+        catalog = self.catalog.values()
+        catalog.sort()
+
+        # Write each entry to the file
+        for entry in catalog:
+            entry.write(file)
+
+        file.close()
 
 
 def update_catalog(strings, other, location_prefix=None):
