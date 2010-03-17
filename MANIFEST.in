@@ -2,3 +2,5 @@ recursive-include src *.zcml
 include version.txt
 include version.txt.in
 include CHANGES.txt
+include buildout.cfg
+include bootstrap.py
