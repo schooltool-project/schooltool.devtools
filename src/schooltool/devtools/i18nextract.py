@@ -78,11 +78,14 @@ class STPOTEntry(extract.POTEntry):
                    (other._locations, other.msgid))
 
 
-version = "development"
 class STPOTMaker(extract.POTMaker):
 
+    def __init__ (self, output_fn, path, domain=None):
+        super(STPOTMaker, self).__init__(output_fn, path)
+        self.domain = domain
+
     def _getProductVersion(self):
-        return "SchoolTool %s" % version
+        return self.domain
 
     def add(self, strings, base_dir=None):
         for msgid, locations in strings.items():
@@ -127,7 +130,7 @@ def update_catalog(strings, other, location_prefix=None):
 
 
 def write_pot(output_file, eggs, domain, site_zcml):
-    maker = STPOTMaker(output_file, here)
+    maker = STPOTMaker(output_file, here, domain=domain)
     catalog = {}
     for egg in eggs:
         src_path = list(pkg_resources.require(egg))[0].location
