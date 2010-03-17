@@ -2,12 +2,20 @@
 CHANGES
 =======
 
+0.5.3 (2010-03-17)
+------------------
+
+- i18nextract now produces sorted POTs
+- Write pot creation date in standard format
+- Write domain to Product-Id-Version
+
+
 0.5.2 (2009-11-04)
 ------------------
 
 - `i18nextract --egg PACKAGE ...` now supports multiple eggs
 - Use python2.5 by default
-- Make `buildout.cfg` extend SchoolTool KGS (based on Zope 3.4 KGS)
+- Make `buildout.cfg` extend SchoolTool KGS
 - Add tags and coverage support to buildout
 
 
