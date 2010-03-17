@@ -74,4 +74,6 @@ setup(
     i18nextract = schooltool.devtools.i18nextract:i18nextract
     runfdoctests = schooltool.devtools.runfdoctests:main
     """,
-    include_package_data=True)
+    include_package_data=True,
+    zip_safe=False,
+    )
