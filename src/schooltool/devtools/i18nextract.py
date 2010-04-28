@@ -117,16 +117,16 @@ class STPOTMaker(extract.POTMaker):
         file.close()
 
 
-def update_catalog(strings, other, location_prefix=None):
-    for msg, locations in other.items():
-        if location_prefix:
+def update_catalog(catalog, strings, base_dir=None):
+    for msgid, locations in strings.items():
+        if base_dir:
             locations = [
-                (filename.replace(location_prefix, ''), lineno)
+                (filename.replace(base_dir, ''), lineno)
                 for filename, lineno in locations]
-        if msg not in strings:
-            strings[msg] = sorted(locations)
+        if msgid not in catalog:
+            catalog[msgid] = sorted(locations)
         else:
-            strings[msg] = sorted(set(strings[msg] + locations))
+            catalog[msgid] = sorted(set(catalog[msgid] + locations))
 
 
 def write_pot(output_file, eggs, domain, site_zcml):
@@ -142,15 +142,15 @@ def write_pot(output_file, eggs, domain, site_zcml):
         path = os.path.join(src_path, first_module)
         update_catalog(
             catalog, extract.py_strings(path, domain, verify_domain=True),
-            location_prefix=base_dir)
+            base_dir)
         update_catalog(
             catalog, extract.tal_strings(path, domain),
-            location_prefix=base_dir)
+            base_dir)
     if site_zcml is not None:
         base_dir = os.getcwd()
         update_catalog(
             catalog, extract.zcml_strings(base_dir, domain, site_zcml=site_zcml),
-            location_prefix=base_dir)
+            base_dir)
     maker.add(catalog)
     maker.write()
 
