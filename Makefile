@@ -108,7 +108,7 @@ publish-ftest-coverage-reports: ftest-coverage/reports
 # Release
 
 .PHONY: release
-release: bin/buildout compile-translations
+release: bin/buildout
 	grep -qv 'dev' version.txt.in || echo -n `cat version.txt.in`_r`bzr revno` > version.txt
 	bin/buildout setup setup.py sdist
 	rm -f version.txt
