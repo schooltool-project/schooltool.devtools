@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.5.4 (unreleased)
+0.5.4 (2011-05-11)
 ------------------
 
 - Update Makefile and other build files from newer schooltool
