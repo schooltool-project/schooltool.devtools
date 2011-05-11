@@ -22,14 +22,6 @@
 SchoolTool DevTools setup script
 """
 
-
-# Check python version
-import sys
-if sys.version_info < (2, 4):
-    print >> sys.stderr, '%s: need Python 2.4 or later.' % sys.argv[0]
-    print >> sys.stderr, 'Your python is %s' % sys.version
-    sys.exit(1)
-
 import os
 from setuptools import setup, find_packages
 
@@ -42,7 +34,6 @@ def read(*rnames):
     text = open(os.path.join(os.path.dirname(__file__), *rnames)).read()
     return text
 
-# Setup SchoolTool DevTools
 setup(
     name="schooltool.devtools",
     description="SchoolTool development tools.",
@@ -54,8 +45,8 @@ setup(
     version=version,
     url='http://www.schooltool.org',
     license="GPL",
-    maintainer="SchoolTool development team",
-    maintainer_email="schooltool-dev@schooltool.org",
+    maintainer="SchoolTool Developers",
+    maintainer_email="schooltool-developers@lists.launchpad.net",
     platforms=["any"],
     classifiers=["Development Status :: 4 - Beta",
     "Intended Audience :: Developers",

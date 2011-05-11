@@ -5,7 +5,7 @@ CHANGES
 0.5.4 (unreleased)
 ------------------
 
-- Fix bootstrap to work on python2.6, use system python
+- Update Makefile and other build files from newer schooltool
 
 
 0.5.3 (2010-03-17)

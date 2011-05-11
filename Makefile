@@ -10,16 +10,15 @@ BUILDOUT_FLAGS=
 all: build
 
 .PHONY: build
-build: bin/test
+build: .installed.cfg
 
 .PHONY: bootstrap
 bootstrap bin/buildout python:
 	$(BOOTSTRAP_PYTHON) bootstrap.py
 
 .PHONY: buildout
-buildout bin/test: python bin/buildout buildout.cfg setup.py
+buildout .installed.cfg: python bin/buildout buildout.cfg setup.py
 	bin/buildout $(BUILDOUT_FLAGS)
-	@touch --no-create bin/test
 
 .PHONY: bzrupdate
 bzrupdate:
@@ -35,11 +34,18 @@ tags: build
 
 .PHONY: clean
 clean:
-	rm -rf bin develop-eggs parts python
-	rm -rf build dist
-	rm -f .installed.cfg
+	rm -rf python
+	rm -rf bin develop-eggs parts .installed.cfg
+	rm -rf build
 	rm -f ID TAGS tags
-	find . -name '*.py[co]' -exec rm -f {} \;
+	rm -rf coverage
+	find . -name '*.py[co]' -delete
+
+.PHONY: realclean
+realclean:
+	rm -rf eggs
+	rm -rf dist
+	$(MAKE) clean
 
 # Tests
 
@@ -65,7 +71,7 @@ coverage: build
 	mv parts/test/coverage .
 
 .PHONY: coverage-reports-html
-coverage-reports-html coverage/reports: build
+coverage-reports-html coverage/reports: coverage
 	test -d parts/test/coverage && ! test -d coverage && mv parts/test/coverage . || true
 	rm -rf coverage/reports
 	mkdir coverage/reports
@@ -89,7 +95,7 @@ ftest-coverage: build
 	mv parts/test/ftest-coverage .
 
 .PHONY: ftest-coverage-reports-html
-ftest-coverage-reports-html ftest-coverage/reports: build
+ftest-coverage-reports-html ftest-coverage/reports: ftest-coverage
 	test -d parts/test/ftest-coverage && ! test -d ftest-coverage && mv parts/test/ftest-coverage . || true
 	rm -rf ftest-coverage/reports
 	mkdir ftest-coverage/reports
@@ -109,7 +115,7 @@ publish-ftest-coverage-reports: ftest-coverage/reports
 
 .PHONY: release
 release: bin/buildout
-	grep -qv 'dev' version.txt.in || echo -n `cat version.txt.in`_r`bzr revno` > version.txt
+	grep -qv 'dev' version.txt.in || echo -n `cat version.txt.in`-r`bzr revno` > version.txt
 	bin/buildout setup setup.py sdist
 	rm -f version.txt
 
@@ -121,5 +127,6 @@ move-release:
 
 .PHONY: ubuntu-environment
 ubuntu-environment:
-	sudo apt-get install bzr build-essential python-all-dev libc6-dev libicu-dev libxslt1-dev libfreetype6-dev libjpeg62-dev
+	sudo apt-get install bzr build-essential gettext enscript ttf-liberation \
+	    python-all-dev libc6-dev libicu-dev libxslt1-dev libfreetype6-dev libjpeg62-dev 
 
