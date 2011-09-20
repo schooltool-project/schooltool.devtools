@@ -278,7 +278,7 @@ class SeleniumRunnerRecipe(zc.recipe.testrunner.TestRunner):
         extra_init = options.get('initialization', '').strip()
         options['initialization'] = '%s\n\n%s' % (selenium_init, extra_init)
 
-    def initSeleniumSection(self, options):
+    def getSeleniumSection(self, options):
         driver_configs = unflatten_options(options, "selenium")
         if not driver_configs:
             return ''
