@@ -22,13 +22,15 @@ Unit tests for schooltool.devtools
 $Id$
 """
 
+import doctest
 import unittest
 import os
 from cStringIO import StringIO
 
 from zope.app.locales import pygettext
-from zope.testing import doctest
 from zope.i18nmessageid import Message
+
+from schooltool.devtools.selenium_recipe import unflatten_options
 
 
 def doctest_STPOTEntry():
@@ -106,6 +108,137 @@ def doctest_STPOTEntry():
     msgid "May"
     msgstr ""
     ------
+
+    """
+
+
+def parse_ini_string(ini):
+    result = {}
+    for line in ini.splitlines():
+        args = line.split('=')
+        if len(args) < 2:
+            continue
+        result[args[0].strip()] = '='.join(args[1:]).strip()
+    return unflatten_options(result)
+
+
+def doctest_ScriptFactory():
+    r"""Tests for Selenium recipe ScriptFactory
+
+        >>> from schooltool.devtools.selenium_recipe import ScriptFactory
+        >>> maker = ScriptFactory()
+
+    Default firefox driver script.
+
+        >>> print maker('firefox', {})
+        import selenium.webdriver.firefox.webdriver
+        schooltool.devtools.selenium_recipe.factories['firefox'] =\
+            lambda: selenium.webdriver.firefox.webdriver.WebDriver()
+
+    Customized default firefox driver.
+
+        >>> print maker('firefox', parse_ini_string('''
+        ...     profile = ff/profile
+        ...     timeout = 30
+        ...     binary = /usr/bin/firefox
+        ...     '''))
+        import selenium.webdriver.firefox.webdriver
+        from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
+        from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+        schooltool.devtools.selenium_recipe.factories['firefox'] =\
+            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox'), firefox_profile=FirefoxProfile('/.../schooltool.devtools/parts/test/ff/profile'), timeout=30)
+
+    Non-default driver named firefox4.
+
+        >>> print maker('firefox4', {})
+        Traceback (most recent call last):
+        ...
+        BadOptions: Need to specify selenium webdriver
+                    (selenium.firefox4.web_driver) for 'firefox4'
+
+    Non-default driver with web_driver specified.
+
+        >>> print maker('firefox4', parse_ini_string('''
+        ...     web_driver = firefox
+        ...     binary = /usr/bin/firefox4
+        ...     '''))
+        import selenium.webdriver.firefox.webdriver
+        from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+        schooltool.devtools.selenium_recipe.factories['firefox4'] =\
+            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox4'))
+
+    IE driver.
+
+        >>> print maker('ie', parse_ini_string('''
+        ...     timeout = 50
+        ...     port = 80
+        ...     '''))
+        import selenium.webdriver.ie.webdriver
+        schooltool.devtools.selenium_recipe.factories['ie'] =\
+            lambda: selenium.webdriver.ie.webdriver.WebDriver(port=80, timeout=50)
+
+    Chrome driver, default.
+
+        >>> print maker('chrome', parse_ini_string('''
+        ...     binary = /usr/bin/chromium-driver
+        ...     port = 80
+        ...     '''))
+        import selenium.webdriver.chrome.webdriver
+        schooltool.devtools.selenium_recipe.factories['chrome'] =\
+            lambda: selenium.webdriver.chrome.webdriver.WebDriver(executable_path='/usr/bin/chromium-driver', port=80)
+
+    Chrome driver, modified to accept capabilities.  Needed for Linux chrome driver.
+
+        >>> print maker('linux_chrome', parse_ini_string('''
+        ...     binary = /usr/bin/chromium-driver
+        ...     capabilities.chrome.binary = /usr/bin/chromium-browser
+        ...     '''))
+        import schooltool.devtools.selenium_recipe
+        schooltool.devtools.selenium_recipe.factories['linux_chrome'] =\
+            lambda: schooltool.devtools.selenium_recipe.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver')
+
+
+    Remote driver.
+
+        >>> print maker('remote', {})
+        Traceback (most recent call last):
+        ...
+        BadOptions: Must set "capabilities" for remote WebDriver 'remote'
+
+    Remote driver with inherited capabilities.
+
+        >>> print maker('builbot_iphone', parse_ini_string('''
+        ...     web_driver = remote
+        ...     capabilities = iphone
+        ...     '''))
+        import selenium.webdriver.remote.webdriver
+        schooltool.devtools.selenium_recipe.factories['builbot_iphone'] =\
+            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iphone', 'version': '', 'javascriptEnabled': True})
+
+    Remote driver with bad capabilities.
+
+        >>> print maker('builbot_opera', parse_ini_string('''
+        ...     web_driver = remote
+        ...     capabilities = whambam
+        ...     '''))
+        Traceback (most recent call last):
+        ...
+        BadOptions: "capabilities" for 'builbot_opera' should be custom or one of:
+          ANDROID, CHROME, FIREFOX, HTMLUNIT, HTMLUNITWITHJS,
+          INTERNETEXPLORER, IPHONE, OPERA.
+
+    Remote driver with custom capabilities.
+
+        >>> print maker('buildroid', parse_ini_string('''
+        ...     web_driver = remote
+        ...     capabilities.browserName = android
+        ...     capabilities.version =
+        ...     capabilities.platform = LINUX
+        ...     capabilities.javascriptEnabled = True
+        ...     '''))
+        import selenium.webdriver.remote.webdriver
+        schooltool.devtools.selenium_recipe.factories['buildroid'] =\
+            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'javascriptEnabled': True, 'browserName': 'android', 'version': '', 'platform': 'LINUX'})
 
     """
 

@@ -59,8 +59,13 @@ setup(
     namespace_packages=["schooltool"],
     install_requires=['zope.testing',
                       'zope.app.locales',
+                      'zc.recipe.testrunner',
+                      'selenium',
                       'setuptools'],
     entry_points="""
+    [zc.buildout]
+    testrunner = schooltool.devtools.selenium_recipe:SeleniumRunnerRecipe
+
     [console_scripts]
     i18nextract = schooltool.devtools.i18nextract:i18nextract
     runfdoctests = schooltool.devtools.runfdoctests:main
