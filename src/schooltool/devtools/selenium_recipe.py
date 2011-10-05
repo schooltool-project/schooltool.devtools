@@ -17,7 +17,26 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 """
-Selenium driver config.
+Selenium runner recipe
+----------------------
+
+To use the selenium testrunner, add a section to buildout.cfg::
+
+  [test-selenium]
+  recipe = schooltool.devtools:testrunner
+  eggs = ${package:eggs}
+  defaults = ['--tests-pattern', '^s?tests$']
+
+  # To run selenium tests:
+  # - Download standalone selenium server from
+  #     http://code.google.com/p/selenium/downloads/list
+  # - Start the server: "java -jar selenium-server-standalone-2.6.0.jar"
+  # - Uncomment the lines below:
+  #
+  #selenium.default = html_unit
+  #selenium.html_unit.web_driver = remote
+  #selenium.html_unit.capabilities = HTMLUNITWITHJS
+
 """
 import os.path
 
