@@ -29,8 +29,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 
 factories = {}
-
 default_factory = None
+implicit_wait = 30
 
 
 class SeleniumNotConfigured(Exception):
@@ -50,7 +50,9 @@ def spawn_browser(factory_name=None):
                 "Default selenium web driver not configured.")
         raise SeleniumNotConfigured(
             "Web driver %r not configured." % factory_name)
-    return factories[factory_name]()
+    browser = factories[factory_name]()
+    browser.implicitly_wait(implicit_wait)
+    return browser
 
 
 def eval_val(val):
@@ -288,7 +290,15 @@ class SeleniumRunnerRecipe(zc.recipe.testrunner.TestRunner):
                              'selenium.%s' % default_driver)
 
         script_factory = ScriptFactory()
+
         scripts = []
+
+        implicit_wait = driver_configs.pop('implicit_wait', None)
+        if implicit_wait:
+            scripts.append(
+                'schooltool.devtools.selenium_recipe.implicit_wait = %f' % (
+                    float(implicit_wait)))
+
         for driver, config in sorted(driver_configs.items()):
             if (not isinstance(config, dict) and
                 config != "default"):
