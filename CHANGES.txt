@@ -12,6 +12,7 @@ CHANGES
 ----------------
 
 - Selenium test runner recipe
+- Create a http://launchpad.net/schooltool.devtools project
 
 
 0.5.4 (2011-05-11)
