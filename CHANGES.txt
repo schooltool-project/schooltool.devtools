@@ -2,7 +2,7 @@
 CHANGES
 =======
 
-0.6.1 (unreleased)
+0.6.1 (2011-10-06)
 ------------------
 
 - Restore support for python << 2.6, move selenium dependent code to
