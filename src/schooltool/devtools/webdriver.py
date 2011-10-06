@@ -133,7 +133,7 @@ class ScriptFactory(object):
 
     def linux_chrome(self, driver, config):
         imps = 'import schooltool.devtools.selenium_recipe'
-        factory = 'schooltool.devtools.selenium_recipe.ChromeWebDriver'
+        factory = 'schooltool.devtools.webdriver.ChromeWebDriver'
         args = []
         kws = {}
 
