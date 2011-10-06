@@ -125,7 +125,7 @@ def parse_ini_string(ini):
 def doctest_ScriptFactory():
     r"""Tests for Selenium recipe ScriptFactory
 
-        >>> from schooltool.devtools.selenium_recipe import ScriptFactory
+        >>> from schooltool.devtools.webdriver import ScriptFactory
         >>> maker = ScriptFactory()
 
     Default firefox driver script.
@@ -195,7 +195,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import schooltool.devtools.selenium_recipe
         schooltool.devtools.selenium_recipe.factories['linux_chrome'] =\
-            lambda: schooltool.devtools.selenium_recipe.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver')
+            lambda: schooltool.devtools.webdriver.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver')
 
 
     Remote driver.
