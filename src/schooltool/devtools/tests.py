@@ -193,7 +193,7 @@ def doctest_ScriptFactory():
         ...     binary = /usr/bin/chromium-driver
         ...     capabilities.chrome.binary = /usr/bin/chromium-browser
         ...     '''))
-        import schooltool.devtools.selenium_recipe
+        import schooltool.devtools.webdriver
         schooltool.devtools.selenium_recipe.factories['linux_chrome'] =\
             lambda: schooltool.devtools.webdriver.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver')
 
