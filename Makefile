@@ -3,7 +3,7 @@
 PACKAGE=schooltool.devtools
 
 DIST=/home/ftp/pub/schooltool/trunk
-BOOTSTRAP_PYTHON=python
+PYTHON=python
 BUILDOUT_FLAGS=
 
 .PHONY: all
@@ -12,9 +12,13 @@ all: build
 .PHONY: build
 build: .installed.cfg
 
+python:
+	rm -rf python
+	virtualenv --no-site-packages -p $(PYTHON) python
+
 .PHONY: bootstrap
-bootstrap bin/buildout python:
-	$(BOOTSTRAP_PYTHON) bootstrap.py
+bootstrap bin/buildout: python
+	python/bin/python bootstrap.py
 
 .PHONY: buildout
 buildout .installed.cfg: python bin/buildout buildout.cfg setup.py
@@ -114,9 +118,9 @@ publish-ftest-coverage-reports: ftest-coverage/reports
 # Release
 
 .PHONY: release
-release: bin/buildout
+release:
 	grep -qv 'dev' version.txt.in || echo -n `cat version.txt.in`-r`bzr revno` > version.txt
-	python setup.py sdist
+	$(PYTHON) setup.py sdist
 	rm -f version.txt
 
 .PHONY: move-release
@@ -142,5 +146,6 @@ upload:
 .PHONY: ubuntu-environment
 ubuntu-environment:
 	sudo apt-get install bzr build-essential gettext enscript ttf-liberation \
-	    python-all-dev libc6-dev libicu-dev libxslt1-dev libfreetype6-dev libjpeg62-dev 
+	    python-all-dev python-virtualenv \
+	    libicu-dev libxslt1-dev libfreetype6-dev libjpeg62-dev
 
