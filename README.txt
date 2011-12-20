@@ -8,4 +8,4 @@ This is a set of scripts used for SchoolTool development:
 
 and a buildout recipe:
 
-- testrunner -- selenium runner recipe
+- testrunner -- selenium test runner recipe
