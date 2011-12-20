@@ -146,7 +146,7 @@ def doctest_ScriptFactory():
         from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
         from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
         schooltool.devtools.selenium_recipe.factories['firefox'] =\
-            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox'), firefox_profile=FirefoxProfile('/.../parts/test/ff/profile'), timeout=30)
+            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox'), firefox_profile=FirefoxProfile('/.../ff/profile'), timeout=30)
 
     Non-default driver named firefox4.
 
