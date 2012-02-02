@@ -213,7 +213,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.remote.webdriver
         schooltool.devtools.selenium_recipe.factories['builbot_iphone'] =\
-            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iphone', 'version': '', 'javascriptEnabled': True})
+            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iPhone', 'version': '', 'javascriptEnabled': True})
 
     Remote driver with bad capabilities.
 
@@ -225,7 +225,7 @@ def doctest_ScriptFactory():
         ...
         BadOptions: "capabilities" for 'builbot_opera' should be custom or one of:
           ANDROID, CHROME, FIREFOX, HTMLUNIT, HTMLUNITWITHJS,
-          INTERNETEXPLORER, IPHONE, OPERA.
+          INTERNETEXPLORER, IPAD, IPHONE, OPERA.
 
     Remote driver with custom capabilities.
 
