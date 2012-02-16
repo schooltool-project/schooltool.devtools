@@ -2,10 +2,10 @@
 CHANGES
 =======
 
-0.6.4 (unreleased)
+0.6.4 (2012-02-16)
 ------------------
 
-- Nothing changed yet.
+- Fix tests for Selenium >= 2.14.
 
 
 0.6.3 (2011-10-12)
