@@ -58,7 +58,7 @@ setup(
     packages=find_packages('src'),
     namespace_packages=["schooltool"],
     install_requires=['zope.testing',
-                      'zope.app.locales',
+                      'zope.app.locales >= 3.7.2',
                       'zc.recipe.testrunner',
                       'selenium',
                       'setuptools'],

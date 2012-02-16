@@ -5,7 +5,7 @@ CHANGES
 0.7.0 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- i18nextract: Remove sorting by locations, zope.app.locales (>= 3.7.2) does it.
 
 
 0.6.4 (2012-02-16)

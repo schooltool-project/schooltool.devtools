@@ -64,18 +64,7 @@ msgstr ""
 
 
 class STPOTEntry(extract.POTEntry):
-
-    def __init__(self, *args, **kw):
-        super(STPOTEntry, self).__init__(*args, **kw)
-        self._locations = []
-
-    def addLocationComment(self, filename, line):
-        self._locations.append((filename, line))
-        super(STPOTEntry, self).addLocationComment(filename, line)
-
-    def __cmp__(self, other):
-        return cmp((self._locations, self.msgid),
-                   (other._locations, other.msgid))
+    pass
 
 
 class STPOTMaker(extract.POTMaker):
@@ -86,18 +75,6 @@ class STPOTMaker(extract.POTMaker):
 
     def _getProductVersion(self):
         return self.domain
-
-    def add(self, strings, base_dir=None):
-        for msgid, locations in strings.items():
-            if msgid == '':
-                continue
-            if msgid not in self.catalog:
-                self.catalog[msgid] = STPOTEntry(msgid)
-
-            for filename, lineno in locations:
-                if base_dir is not None:
-                    filename = filename.replace(base_dir, '')
-                self.catalog[msgid].addLocationComment(filename, lineno)
 
     def write(self):
         "Overriden to write date in the correct format"
@@ -117,18 +94,6 @@ class STPOTMaker(extract.POTMaker):
         file.close()
 
 
-def update_catalog(catalog, strings, base_dir=None):
-    for msgid, locations in strings.items():
-        if base_dir:
-            locations = [
-                (filename.replace(base_dir, ''), lineno)
-                for filename, lineno in locations]
-        if msgid not in catalog:
-            catalog[msgid] = sorted(locations)
-        else:
-            catalog[msgid] = sorted(set(catalog[msgid] + locations))
-
-
 def write_pot(output_file, eggs, domain, site_zcml):
     maker = STPOTMaker(output_file, here, domain=domain)
     catalog = {}
@@ -140,16 +105,13 @@ def write_pot(output_file, eggs, domain, site_zcml):
             base_dir = os.path.split(base_dir)[0]
         first_module = egg.split('.')[0]
         path = os.path.join(src_path, first_module)
-        update_catalog(
-            catalog, extract.py_strings(path, domain, verify_domain=True),
+        maker.add(extract.py_strings(path, domain, verify_domain=True),
             base_dir)
-        update_catalog(
-            catalog, extract.tal_strings(path, domain),
+        maker.add(extract.tal_strings(path, domain),
             base_dir)
     if site_zcml is not None:
         base_dir = os.getcwd()
-        update_catalog(
-            catalog, extract.zcml_strings(base_dir, domain, site_zcml=site_zcml),
+        maker.add(extract.zcml_strings(base_dir, domain, site_zcml=site_zcml),
             base_dir)
     maker.add(catalog)
     maker.write()

@@ -26,6 +26,7 @@ import doctest
 import unittest
 import os
 from cStringIO import StringIO
+import tempfile
 
 from zope.app.locales import pygettext
 from zope.i18nmessageid import Message
@@ -239,6 +240,65 @@ def doctest_ScriptFactory():
         import selenium.webdriver.remote.webdriver
         schooltool.devtools.selenium_recipe.factories['buildroid'] =\
             lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'javascriptEnabled': True, 'browserName': 'android', 'version': '', 'platform': 'LINUX'})
+
+    """
+
+
+def doctest_STPOTMaker_write():
+    r"""Test for POTMaker.write
+
+        >>> from schooltool.devtools.i18nextract import STPOTMaker
+        >>> f, path = tempfile.mkstemp()
+        >>> pm = STPOTMaker(path, '', 'domain')
+        >>> pm.add({'msgid1': [('file2.py', 2), ('file1.py', 3)],
+        ...         'msgid2': [('file1.py', 5)]})
+
+        >>> from zope.app.locales.pygettext import make_escapes
+        >>> make_escapes(0)
+        >>> pm.write()
+        >>> f = open(path)
+        >>> print f.read()
+        # SchoolTool - common information systems platform for school administration
+        # Copyright (c) 2007    Shuttleworth Foundation
+        #
+        # This program is free software; you can redistribute it and/or modify
+        # it under the terms of the GNU General Public License as published by
+        # the Free Software Foundation; either version 2 of the License, or
+        # (at your option) any later version.
+        #
+        # This program is distributed in the hope that it will be useful,
+        # but WITHOUT ANY WARRANTY; without even the implied warranty of
+        # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        # GNU General Public License for more details.
+        #
+        # You should have received a copy of the GNU General Public License
+        # along with this program; if not, write to the Free Software
+        # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+        msgid ""
+        msgstr ""
+        "Project-Id-Version: domain\n"
+        "POT-Creation-Date: ...-...-... ...:...0\n"
+        "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+        "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+        "Language-Team: Schooltool Development Team <schooltool-dev@schooltool.org>\n"
+        "MIME-Version: 1.0\n"
+        "Content-Type: text/plain; charset=UTF-8\n"
+        "Content-Transfer-Encoding: 8bit\n"
+        "Generated-By: i18nextract.py\n"
+        <BLANKLINE>
+        #: file1.py:3
+        #: file2.py:2
+        msgid "msgid1"
+        msgstr ""
+        <BLANKLINE>
+        #: file1.py:5
+        msgid "msgid2"
+        msgstr ""
+        <BLANKLINE>
+        <BLANKLINE>
+
+        >>> f.close()
+        >>> os.unlink(path)
 
     """
 
