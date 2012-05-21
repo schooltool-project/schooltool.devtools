@@ -40,6 +40,8 @@ To use the selenium testrunner, add a section to buildout.cfg::
 """
 import sys
 import zc.recipe.testrunner
+from zope.testrunner.runner import Runner as ZopeTestRunner
+import zope.testrunner.feature
 
 
 factories = {}
@@ -103,6 +105,36 @@ selenium_config_script = '''
 import schooltool.devtools.selenium_recipe
 schooltool.devtools.selenium_recipe.default_factory = %(default_factory)r
 %(factory_templates)s
+%(selenium_options)s
+'''
+
+
+selenium_options_script = '''
+import schooltool.devtools.selenium_recipe
+
+import optparse
+import zope.testrunner.options
+import zope.testrunner.runner
+
+selenium_options = optparse.OptionGroup(
+    zope.testrunner.options.parser,
+    "Selenium", """\
+Additional options for Selenium tests.
+""")
+
+selenium_options.add_option(
+    '--selenium-browser', action="store", type="string", dest='selenium_browser',
+    help="""\
+Specify the browser to run the tests with.
+Available configurations: %s.
+""" % (', '.join(schooltool.devtools.selenium_recipe.factories.keys()) or 'none'))
+
+zope.testrunner.options.parser.add_option_group(selenium_options)
+zope.testrunner.options.parser.set_default(
+    'selenium_browser', schooltool.devtools.selenium_recipe.default_factory)
+
+# Replace the default Zope test runner
+zope.testrunner.runner.Runner = schooltool.devtools.selenium_recipe.Runner
 '''
 
 
@@ -154,4 +186,27 @@ class SeleniumRunnerRecipe(zc.recipe.testrunner.TestRunner):
         return selenium_config_script % {
             'default_factory': default_driver,
             'factory_templates': '\n\n'.join(scripts),
+            'selenium_options': selenium_options_script,
             }
+
+
+class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
+
+    @property
+    def active(self):
+        global factories
+        return bool(factories)
+
+    def global_setup(self):
+        global default_factory
+        default_factory = self.runner.options.selenium_browser
+
+
+class Runner(ZopeTestRunner):
+
+    def configure(self):
+        ZopeTestRunner.configure(self)
+        selenium = RunnerSeleniumFeature(self)
+        if selenium.active:
+            self.features.append(selenium)
+
