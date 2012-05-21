@@ -61,6 +61,7 @@ setup(
                       'zope.app.locales >= 3.7.2',
                       'zc.recipe.testrunner',
                       'selenium',
+                      'PyVirtualDisplay',
                       'setuptools'],
     entry_points="""
     [zc.buildout]

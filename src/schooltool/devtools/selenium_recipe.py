@@ -123,15 +123,46 @@ Additional options for Selenium tests.
 """)
 
 selenium_options.add_option(
+    '--selenium-headless', action="store_true", dest='selenium_headless',
+    help="""\
+Run headless, under a virtual display.
+""")
+
+selenium_options.add_option(
+    '--selenium-headless-width', action="store", type="int",
+    dest='selenium_headless_width')
+
+zope.testrunner.options.parser.set_default(
+    'selenium_headless_width', 1024)
+
+selenium_options.add_option(
+    '--selenium-headless-height', action="store", type="int",
+    dest='selenium_headless_height')
+
+zope.testrunner.options.parser.set_default(
+    'selenium_headless_height', 768)
+
+selenium_options.add_option(
+    '--selenium-headless-backend', action="store", type="string",
+    dest='selenium_headless_backend',
+    help="""\
+Virtual display backend: xvfb, xvnc, xephyr.
+""")
+
+zope.testrunner.options.parser.set_default(
+    'selenium_headless_backend', None)
+
+selenium_options.add_option(
     '--selenium-browser', action="store", type="string", dest='selenium_browser',
     help="""\
 Specify the browser to run the tests with.
 Available configurations: %s.
 """ % (', '.join(schooltool.devtools.selenium_recipe.factories.keys()) or 'none'))
 
-zope.testrunner.options.parser.add_option_group(selenium_options)
 zope.testrunner.options.parser.set_default(
     'selenium_browser', schooltool.devtools.selenium_recipe.default_factory)
+
+zope.testrunner.options.parser.add_option_group(selenium_options)
 
 # Replace the default Zope test runner
 zope.testrunner.runner.Runner = schooltool.devtools.selenium_recipe.Runner
@@ -192,14 +223,34 @@ class SeleniumRunnerRecipe(zc.recipe.testrunner.TestRunner):
 
 class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
 
+    virtual_display = None
+
     @property
     def active(self):
         global factories
         return bool(factories)
 
     def global_setup(self):
+        options = self.runner.options
+
         global default_factory
-        default_factory = self.runner.options.selenium_browser
+        default_factory = options.selenium_browser
+
+        if options.selenium_headless:
+            from pyvirtualdisplay import Display
+            self.virtual_display = Display(
+                backend=options.selenium_headless_backend,
+                visible=False,
+                size=(options.selenium_headless_width,
+                      options.selenium_headless_height))
+
+    def layer_setup(self, layer):
+        if self.virtual_display:
+            self.virtual_display.start()
+
+    def layer_teardown(self, layer):
+        if self.virtual_display:
+            self.virtual_display.stop()
 
 
 class Runner(ZopeTestRunner):
