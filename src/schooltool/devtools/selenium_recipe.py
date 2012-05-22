@@ -38,7 +38,7 @@ To use the selenium testrunner, add a section to buildout.cfg::
   #selenium.html_unit.capabilities = HTMLUNITWITHJS
 
 """
-import sys
+import os, sys
 import zc.recipe.testrunner
 from zope.testrunner.runner import Runner as ZopeTestRunner
 import zope.testrunner.feature
@@ -48,6 +48,9 @@ factories = {}
 default_factory = None
 implicit_wait = 30
 
+screenshots_dir = None # Directory to store screenshots
+screenshots_url = None # (external) URL to screenshots directory
+overwrite_screenshots = False
 
 class SeleniumNotConfigured(Exception):
     pass
@@ -61,7 +64,7 @@ def spawn_browser(factory_name=None):
     if factory_name is None:
         factory_name = default_factory
     if factory_name not in factories:
-        if factory_name == default_factory:
+        if factory_name is None:
             raise SeleniumNotConfigured(
                 "Default selenium web driver not configured.")
         raise SeleniumNotConfigured(
@@ -128,6 +131,17 @@ selenium_options.add_option(
 Run headless, under a virtual display.
 """)
 
+
+selenium_options.add_option(
+    '--selenium-headless-backend', action="store", type="string",
+    dest='selenium_headless_backend',
+    help="""\
+Select virtual display backend: xvfb, xvnc, xephyr.
+""")
+
+zope.testrunner.options.parser.set_default(
+    'selenium_headless_backend', None)
+
 selenium_options.add_option(
     '--selenium-headless-width', action="store", type="int",
     dest='selenium_headless_width')
@@ -143,24 +157,36 @@ zope.testrunner.options.parser.set_default(
     'selenium_headless_height', 768)
 
 selenium_options.add_option(
-    '--selenium-headless-backend', action="store", type="string",
-    dest='selenium_headless_backend',
-    help="""\
-Virtual display backend: xvfb, xvnc, xephyr.
-""")
-
-zope.testrunner.options.parser.set_default(
-    'selenium_headless_backend', None)
-
-selenium_options.add_option(
     '--selenium-browser', action="store", type="string", dest='selenium_browser',
     help="""\
 Specify the browser to run the tests with.
-Available configurations: %s.
+Currently available configurations: %s.
 """ % (', '.join(schooltool.devtools.selenium_recipe.factories.keys()) or 'none'))
 
 zope.testrunner.options.parser.set_default(
     'selenium_browser', schooltool.devtools.selenium_recipe.default_factory)
+
+selenium_options.add_option(
+    '--selenium-screenshots-dir', action="store", type="string",
+    dest='selenium_screenshots_dir',
+    help="""\
+Store screenshots here.
+Directory will be created if not found.
+If not specified, no screenshots will be taken.
+""")
+
+selenium_options.add_option(
+    '--selenium-screenshots-url', action="store", type="string",
+    dest='selenium_screenshots_url',
+    help="""\
+External URL to screenshots directory.  Use file:// if not specified.
+""")
+
+selenium_options.add_option(
+    '--selenium-overwrite-screenshots', action="store_true", dest='selenium_overwrite',
+    help="""\
+Overwrite existing files when taking screenshots.
+""")
 
 zope.testrunner.options.parser.add_option_group(selenium_options)
 
@@ -230,19 +256,48 @@ class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
         global factories
         return bool(factories)
 
-    def global_setup(self):
+    def set_up_virtual_display(self):
         options = self.runner.options
 
-        global default_factory
-        default_factory = options.selenium_browser
-
-        if options.selenium_headless:
+        if (options.selenium_headless or
+            options.selenium_headless_backend):
             from pyvirtualdisplay import Display
             self.virtual_display = Display(
                 backend=options.selenium_headless_backend,
                 visible=False,
                 size=(options.selenium_headless_width,
                       options.selenium_headless_height))
+
+    def set_up_screenshots(self):
+        options = self.runner.options
+        if not options.selenium_screenshots_dir:
+            return
+
+        global overwrite_screenshots
+        overwrite_screenshots = options.selenium_overwrite
+
+        global screenshots_dir
+        global screenshots_url
+
+        screenshots_dir = os.path.normpath(options.selenium_screenshots_dir)
+
+        if not os.path.exists(screenshots_dir):
+            os.mkdir(screenshots_dir)
+
+        if options.selenium_screenshots_url:
+            screenshots_url = options.selenium_screenshots_url
+            if not screenshots_url.endswith('/'):
+                screenshots_url += '/'
+
+
+    def global_setup(self):
+        options = self.runner.options
+
+        global default_factory
+        default_factory = options.selenium_browser
+
+        self.set_up_virtual_display()
+        self.set_up_screenshots()
 
     def layer_setup(self, layer):
         if self.virtual_display:
