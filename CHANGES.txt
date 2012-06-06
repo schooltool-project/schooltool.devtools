@@ -2,9 +2,13 @@
 CHANGES
 =======
 
-0.7.0 (unreleased)
+0.7.0 (2012-06-06)
 ------------------
 
+- Headless selenium test runner mode, courtesy of PyVirtualDisplay
+- Screenshots configuration
+- Choose browser to use when several are configured
+- Run `bin/test --help` to see all the new Selenium options
 - i18nextract: Remove sorting by locations, zope.app.locales (>= 3.7.2) does it.
 
 
