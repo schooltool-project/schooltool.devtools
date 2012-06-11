@@ -270,8 +270,15 @@ class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
 
     def set_up_screenshots(self):
         options = self.runner.options
-        if not options.selenium_screenshots_dir:
-            return
+        target_dir = options.selenium_screenshots_dir
+        if not target_dir:
+            if (options.selenium_headless or
+                options.selenium_headless_backend):
+                # put it somewhere locally by default
+                # (like ./parts/*this-testrunner-part*/screenshots)
+                target_dir = 'screenshots'
+            else:
+                return
 
         global overwrite_screenshots
         overwrite_screenshots = options.selenium_overwrite
@@ -279,7 +286,7 @@ class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
         global screenshots_dir
         global screenshots_url
 
-        screenshots_dir = os.path.normpath(options.selenium_screenshots_dir)
+        screenshots_dir = os.path.normpath(target_dir)
 
         if not os.path.exists(screenshots_dir):
             os.mkdir(screenshots_dir)
