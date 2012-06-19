@@ -31,7 +31,8 @@ from schooltool.devtools.selenium_recipe import BadOptions
 
 class ChromeWebDriver(selenium.webdriver.chrome.webdriver.WebDriver):
     def __init__(self, executable_path="chromedriver", port=0,
-                 desired_capabilities=DesiredCapabilities.CHROME):
+                 desired_capabilities=DesiredCapabilities.CHROME,
+                 config=None):
         """ Creates a new instance of the chrome driver. Starts the service
             and then creates
             Attributes:
@@ -45,6 +46,15 @@ class ChromeWebDriver(selenium.webdriver.chrome.webdriver.WebDriver):
             executable_path, port=port)
         self.service.start()
 
+        desired_capabilities = dict(desired_capabilities)
+        default_prefs = {
+                'download.prompt_for_download': False,
+                'download.directory_upgrade': True,
+                'download.default_directory': config.downloads_dir,
+                }
+        default_prefs.update(desired_capabilities.get('chrome.prefs', {}))
+        desired_capabilities['chrome.prefs'] = default_prefs
+
         selenium.webdriver.remote.webdriver.WebDriver.__init__(
             self,
             command_executor=self.service.service_url,
@@ -54,7 +64,7 @@ class ChromeWebDriver(selenium.webdriver.chrome.webdriver.WebDriver):
 factory_config_script = '''
 %(imports)s
 schooltool.devtools.selenium_recipe.factories[%(name)r] =\\
-    lambda: %(factory)s(%(args)s)
+    lambda config=None: %(factory)s(%(args)s)
 '''
 
 
@@ -96,7 +106,6 @@ class ScriptFactory(object):
 
         return self.template % {
             'imports': imps, 'name': driver, 'factory': factory,
-            'factory': factory,
             'args': format_args(*args, **kws)}
 
     def ie(self, driver, config):
@@ -127,9 +136,14 @@ class ScriptFactory(object):
         if 'binary' in config:
             kws['executable_path'] = config['binary']
 
+        kws['desired_capabilities'] = dict(DesiredCapabilities.CHROME)
+
+        arguments = format_args(*args, **kws)
+        arguments = ', '.join([arguments, 'config=config'])
+
         return self.template % {
             'imports': imps, 'name': driver, 'factory': factory,
-            'args': format_args(*args, **kws)}
+            'args': arguments}
 
     def linux_chrome(self, driver, config):
         imps = 'import schooltool.devtools.webdriver'
@@ -154,9 +168,12 @@ class ScriptFactory(object):
             kws['desired_capabilities'] = dict(DesiredCapabilities.CHROME)
             kws['desired_capabilities'].update(caps)
 
+        arguments = format_args(*args, **kws)
+        arguments = ', '.join([arguments, 'config=config'])
+
         return self.template % {
             'imports': imps, 'name': driver, 'factory': factory,
-            'args': format_args(*args, **kws)}
+            'args': arguments}
 
     def remote(self, driver, config):
         imps = 'import selenium.webdriver.remote.webdriver'

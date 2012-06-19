@@ -44,13 +44,60 @@ from zope.testrunner.runner import Runner as ZopeTestRunner
 import zope.testrunner.feature
 
 
+class BrowserConfig(object):
+    implicit_wait = 30
+
+    screenshots_dir = None # Directory to store screenshots
+    screenshots_url = None # (external) URL to screenshots directory
+    overwrite_screenshots = False
+
+    downloads_dir = None # Directory to store downloads
+    downloads_url = None # (external) URL to downloads directory
+
+    def __init__(self, **kw):
+        kw = dict(kw)
+        for attr in self._settings():
+            if attr in kw:
+                value = kw.pop()
+                setattr(self, attr, value)
+        if kw:
+            raise TypeError(
+                "__init__() got an unexpected keyword argument(s) %s" % (
+                    ', '.join((kw))))
+
+    def _settings(self):
+        for attr in self.__class__.__dict__:
+            if (not attr.startswith('_') and
+                attr not in ('update', 'copy')):
+                yield attr
+
+    def update(self, other_config):
+        for attr in self._settings():
+            if attr in other_config.__dict__:
+                setattr(self, attr, getattr(other_config, attr))
+
+    def copy(self):
+        config = {}
+        for attr in self._settings():
+            config[attr] = getattr(self, attr)
+        return type(self.__class__.__name__,
+                    (self.__class__,),
+                    config)()
+
+    def __str__(self):
+        result = ['<%s> :' % self.__class__.__name__]
+        for attr in sorted(self._settings()):
+            changed = attr in self.__dict__
+            result.append(' %s %s: %s' % (
+                    changed and '*' or ' ', attr, getattr(self, attr)) )
+        return '\n'.join(result)
+
+
 factories = {}
 default_factory = None
-implicit_wait = 30
 
-screenshots_dir = None # Directory to store screenshots
-screenshots_url = None # (external) URL to screenshots directory
-overwrite_screenshots = False
+default_browser_config = BrowserConfig()
+
 
 class SeleniumNotConfigured(Exception):
     pass
@@ -60,7 +107,10 @@ class BadOptions(Exception):
     pass
 
 
-def spawn_browser(factory_name=None):
+def spawn_browser(factory_name=None, config=None):
+    if config is None:
+        global default_browser_config
+        config = default_browser_config
     if factory_name is None:
         factory_name = default_factory
     if factory_name not in factories:
@@ -69,8 +119,8 @@ def spawn_browser(factory_name=None):
                 "Default selenium web driver not configured.")
         raise SeleniumNotConfigured(
             "Web driver %r not configured." % factory_name)
-    browser = factories[factory_name]()
-    browser.implicitly_wait(implicit_wait)
+    browser = factories[factory_name](config=config)
+    browser.implicitly_wait(config.implicit_wait)
     return browser
 
 
@@ -188,6 +238,22 @@ selenium_options.add_option(
 Overwrite existing files when taking screenshots.
 """)
 
+selenium_options.add_option(
+    '--selenium-downloads-dir', action="store", type="string",
+    dest='selenium_downloads_dir',
+    help="""\
+Store downloads here.
+Directory will be created if not found.
+If not specified, no downloads will be taken.
+""")
+
+selenium_options.add_option(
+    '--selenium-downloads-url', action="store", type="string",
+    dest='selenium_downloads_url',
+    help="""\
+External URL to downloads directory.  Use file:// if not specified.
+""")
+
 zope.testrunner.options.parser.add_option_group(selenium_options)
 
 # Replace the default Zope test runner
@@ -270,25 +336,44 @@ class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
 
     def set_up_screenshots(self):
         options = self.runner.options
-        if not options.selenium_screenshots_dir:
-            return
+        target_dir = options.selenium_screenshots_dir
+        if not target_dir:
+            # put it somewhere locally by default
+            # (like ./parts/*this-testrunner-part*/screenshots)
+            target_dir = 'screenshots'
 
-        global overwrite_screenshots
-        overwrite_screenshots = options.selenium_overwrite
+        global default_browser_config
+        default_browser_config.overwrite_screenshots = options.selenium_overwrite
 
-        global screenshots_dir
-        global screenshots_url
+        default_browser_config.screenshots_dir = os.path.normpath(target_dir)
 
-        screenshots_dir = os.path.normpath(options.selenium_screenshots_dir)
-
-        if not os.path.exists(screenshots_dir):
-            os.mkdir(screenshots_dir)
+        if not os.path.exists(default_browser_config.screenshots_dir):
+            os.mkdir(default_browser_config.screenshots_dir)
 
         if options.selenium_screenshots_url:
-            screenshots_url = options.selenium_screenshots_url
-            if not screenshots_url.endswith('/'):
-                screenshots_url += '/'
+            default_browser_config.screenshots_url = options.selenium_screenshots_url
+            if not default_browser_config.screenshots_url.endswith('/'):
+                default_browser_config.screenshots_url += '/'
 
+    def set_up_downloads(self):
+        options = self.runner.options
+        target_dir = options.selenium_downloads_dir
+        if not target_dir:
+            # put it somewhere locally by default
+            # (like ./parts/*this-testrunner-part*/downloads)
+            target_dir = 'downloads'
+
+        global default_browser_config
+
+        default_browser_config.downloads_dir = os.path.normpath(target_dir)
+
+        if not os.path.exists(default_browser_config.downloads_dir):
+            os.mkdir(default_browser_config.downloads_dir)
+
+        if options.selenium_downloads_url:
+            default_browser_config.downloads_url = options.selenium_downloads_url
+            if not default_browser_config.downloads_url.endswith('/'):
+                default_browser_config.downloads_url += '/'
 
     def global_setup(self):
         options = self.runner.options
@@ -298,6 +383,7 @@ class RunnerSeleniumFeature(zope.testrunner.feature.Feature):
 
         self.set_up_virtual_display()
         self.set_up_screenshots()
+        self.set_up_downloads()
 
     def layer_setup(self, layer):
         if self.virtual_display:
