@@ -2,10 +2,16 @@
 CHANGES
 =======
 
-0.7.1 (unreleased)
+0.7.2 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Nothing changed yeet.
+
+
+0.7.1 (2012-06-19)
+------------------
+
+- Downloads configuration (chromedriver only)
 
 
 0.7.0 (2012-06-06)
