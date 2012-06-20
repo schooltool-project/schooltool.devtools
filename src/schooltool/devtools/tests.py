@@ -134,7 +134,7 @@ def doctest_ScriptFactory():
         >>> print maker('firefox', {})
         import selenium.webdriver.firefox.webdriver
         schooltool.devtools.selenium_recipe.factories['firefox'] =\
-            lambda: selenium.webdriver.firefox.webdriver.WebDriver()
+            lambda config=None: selenium.webdriver.firefox.webdriver.WebDriver()
 
     Customized default firefox driver.
 
@@ -147,7 +147,7 @@ def doctest_ScriptFactory():
         from selenium.webdriver.firefox.firefox_profile import FirefoxProfile
         from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
         schooltool.devtools.selenium_recipe.factories['firefox'] =\
-            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox'), firefox_profile=FirefoxProfile('/.../ff/profile'), timeout=30)
+            lambda config=None: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox'), firefox_profile=FirefoxProfile('/.../ff/profile'), timeout=30)
 
     Non-default driver named firefox4.
 
@@ -166,7 +166,7 @@ def doctest_ScriptFactory():
         import selenium.webdriver.firefox.webdriver
         from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
         schooltool.devtools.selenium_recipe.factories['firefox4'] =\
-            lambda: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox4'))
+            lambda config=None: selenium.webdriver.firefox.webdriver.WebDriver(firefox_binary=FirefoxBinary('/usr/bin/firefox4'))
 
     IE driver.
 
@@ -176,7 +176,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.ie.webdriver
         schooltool.devtools.selenium_recipe.factories['ie'] =\
-            lambda: selenium.webdriver.ie.webdriver.WebDriver(port=80, timeout=50)
+            lambda config=None: selenium.webdriver.ie.webdriver.WebDriver(port=80, timeout=50)
 
     Chrome driver, default.
 
@@ -186,7 +186,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.chrome.webdriver
         schooltool.devtools.selenium_recipe.factories['chrome'] =\
-            lambda: selenium.webdriver.chrome.webdriver.WebDriver(executable_path='/usr/bin/chromium-driver', port=80)
+            lambda config=None: selenium.webdriver.chrome.webdriver.WebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver', port=80, config=config)
 
     Chrome driver, modified to accept capabilities.  Needed for Linux chrome driver.
 
@@ -196,7 +196,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import schooltool.devtools.webdriver
         schooltool.devtools.selenium_recipe.factories['linux_chrome'] =\
-            lambda: schooltool.devtools.webdriver.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver')
+            lambda config=None: schooltool.devtools.webdriver.ChromeWebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'chrome.binary': '/usr/bin/chromium-browser', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver', config=config)
 
 
     Remote driver.
@@ -214,7 +214,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.remote.webdriver
         schooltool.devtools.selenium_recipe.factories['builbot_iphone'] =\
-            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iPhone', 'version': '', 'javascriptEnabled': True})
+            lambda config=None: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iPhone', 'version': '', 'javascriptEnabled': True})
 
     Remote driver with bad capabilities.
 
@@ -239,7 +239,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.remote.webdriver
         schooltool.devtools.selenium_recipe.factories['buildroid'] =\
-            lambda: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'javascriptEnabled': True, 'browserName': 'android', 'version': '', 'platform': 'LINUX'})
+            lambda config=None: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'javascriptEnabled': True, 'browserName': 'android', 'version': '', 'platform': 'LINUX'})
 
     """
 
