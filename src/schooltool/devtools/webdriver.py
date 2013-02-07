@@ -133,13 +133,9 @@ class ScriptFactory(object):
         if 'binary' in config:
             kws['executable_path'] = config['binary']
 
-        if 'binary' in config:
-            kws['executable_path'] = config['binary']
-
         kws['desired_capabilities'] = dict(DesiredCapabilities.CHROME)
 
         arguments = format_args(*args, **kws)
-        arguments = ', '.join([arguments, 'config=config'])
 
         return self.template % {
             'imports': imps, 'name': driver, 'factory': factory,
