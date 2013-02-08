@@ -186,7 +186,7 @@ def doctest_ScriptFactory():
         ...     '''))
         import selenium.webdriver.chrome.webdriver
         schooltool.devtools.selenium_recipe.factories['chrome'] =\
-            lambda config=None: selenium.webdriver.chrome.webdriver.WebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver', port=80, config=config)
+            lambda config=None: selenium.webdriver.chrome.webdriver.WebDriver(desired_capabilities={'platform': 'ANY', 'browserName': 'chrome', 'version': '', 'javascriptEnabled': True}, executable_path='/usr/bin/chromium-driver', port=80)
 
     Chrome driver, modified to accept capabilities.  Needed for Linux chrome driver.
 
@@ -208,23 +208,23 @@ def doctest_ScriptFactory():
 
     Remote driver with inherited capabilities.
 
-        >>> print maker('builbot_iphone', parse_ini_string('''
+        >>> print maker('remote_iphone', parse_ini_string('''
         ...     web_driver = remote
         ...     capabilities = iphone
         ...     '''))
         import selenium.webdriver.remote.webdriver
-        schooltool.devtools.selenium_recipe.factories['builbot_iphone'] =\
+        schooltool.devtools.selenium_recipe.factories['remote_iphone'] =\
             lambda config=None: selenium.webdriver.remote.webdriver.WebDriver(desired_capabilities={'platform': 'MAC', 'browserName': 'iPhone', 'version': '', 'javascriptEnabled': True})
 
     Remote driver with bad capabilities.
 
-        >>> print maker('builbot_opera', parse_ini_string('''
+        >>> print maker('remote_opera', parse_ini_string('''
         ...     web_driver = remote
         ...     capabilities = whambam
         ...     '''))
         Traceback (most recent call last):
         ...
-        BadOptions: "capabilities" for 'builbot_opera' should be custom or one of:
+        BadOptions: "capabilities" for 'remote_opera' should be custom or one of:
           ANDROID, CHROME, FIREFOX, HTMLUNIT, HTMLUNITWITHJS,
           INTERNETEXPLORER, IPAD, IPHONE, OPERA.
 
