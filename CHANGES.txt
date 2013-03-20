@@ -5,7 +5,7 @@ CHANGES
 0.7.2 (unreleased)
 ------------------
 
-- Nothing changed yeet.
+- Chrome: disable translate toolbar and password manager
 
 
 0.7.1 (2012-06-19)

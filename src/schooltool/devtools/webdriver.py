@@ -51,6 +51,8 @@ class ChromeWebDriver(selenium.webdriver.chrome.webdriver.WebDriver):
                 'download.prompt_for_download': False,
                 'download.directory_upgrade': True,
                 'download.default_directory': config.downloads_dir,
+                'translate.enabled': False,
+                'profile.password_manager_enabled': False,
                 }
         default_prefs.update(desired_capabilities.get('chrome.prefs', {}))
         desired_capabilities['chrome.prefs'] = default_prefs
