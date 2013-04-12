@@ -3,5 +3,8 @@ include version.txt.in
 include CHANGES.txt
 include GPL.txt
 include Makefile
+include base.cfg
 include buildout.cfg
+include deploy.cfg
+include develop.cfg
 include bootstrap.py
