@@ -1,5 +1,7 @@
 include version.txt
 include version.txt.in
 include CHANGES.txt
+include GPL.txt
+include Makefile
 include buildout.cfg
 include bootstrap.py
