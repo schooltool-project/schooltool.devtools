@@ -2,7 +2,7 @@
 
 PACKAGE=schooltool.devtools
 
-DIST=/home/ftp/pub/schooltool/trunk
+DIST=/home/ftp/pub/schooltool/flourish
 PYTHON=python
 BUILDOUT_FLAGS=
 
