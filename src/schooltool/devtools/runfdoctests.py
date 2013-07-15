@@ -17,11 +17,11 @@ import sys
 import readline
 from StringIO import StringIO
 
-from zope.testing.doctest import (DocTestCase, REPORTING_FLAGS,
-                                  _unittest_reportflags,
-                                  DocTestRunner,
-                                  DocTestParser)
-import zope.testing.testrunner
+from doctest import (DocTestCase, REPORTING_FLAGS,
+                     _unittest_reportflags,
+                     DocTestRunner,
+                     DocTestParser)
+import zope.testrunner
 
 def interactiveRunTest(self):
     test = self._dt_test
@@ -90,7 +90,7 @@ def main():
     # Tab completion
     readline.set_completer_delims(' \t\n')
     readline.parse_and_bind('tab: complete')
-    include_eggs = ['schooltool', 'cando', 'lyceum']
+    include_eggs = ['schooltool']
     params = []
     import pkg_resources
     for egg_spec in include_eggs:
@@ -100,7 +100,7 @@ def main():
         except pkg_resources.DistributionNotFound:
             pass
 
-    zope.testing.testrunner.run(params + ['--tests-pattern', '^f?tests$'])
+    zope.testrunner.run(params + ['--tests-pattern', '^f?tests$'])
 
 if __name__ == '__main__':
     main()
