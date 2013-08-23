@@ -5,7 +5,7 @@ CHANGES
 0.7.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Update GPL license and file headers from gnu.org (https://launchpad.net/bugs/1211145)
 
 
 0.7.2 (2013-04-12)
