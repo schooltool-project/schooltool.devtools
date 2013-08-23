@@ -2,7 +2,7 @@
 
 PACKAGE=schooltool.devtools
 
-DIST=/home/ftp/pub/schooltool/flourish
+DIST=/home/ftp/pub/schooltool/trunk
 PYTHON=python
 BUILDOUT_FLAGS=
 
@@ -143,8 +143,8 @@ upload:
 	    echo cp dist/$(PACKAGE)-$${VERSION}.tar.gz $${DIST} ;\
 	    cp dist/$(PACKAGE)-$${VERSION}.tar.gz $${DIST} ;\
 	else \
-	    echo scp dist/$(PACKAGE)-$${VERSION}.tar.gz* schooltool.org:$${DIST} ;\
-	    scp dist/$(PACKAGE)-$${VERSION}.tar.gz* schooltool.org:$${DIST} ;\
+	    echo scp dist/$(PACKAGE)-$${VERSION}.tar.gz* ftp.schooltool.org:$${DIST} ;\
+	    scp dist/$(PACKAGE)-$${VERSION}.tar.gz* ftp.schooltool.org:$${DIST} ;\
 	fi
 
 # Helpers
@@ -152,7 +152,5 @@ upload:
 .PHONY: ubuntu-environment
 ubuntu-environment:
 	sudo apt-get install build-essential gettext enscript \
-	    python-dev python-virtualenv \
-	    ttf-ubuntu-font-family ttf-liberation \
-	    libicu-dev libxslt1-dev libfreetype6-dev libjpeg-dev
+	    python-dev python-virtualenv
 
