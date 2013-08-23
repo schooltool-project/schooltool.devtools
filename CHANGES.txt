@@ -2,9 +2,10 @@
 CHANGES
 =======
 
-0.7.3 (unreleased)
+0.8.0 (2013-08-23)
 ------------------
 
+- Add ``debugdb``, an interactive database debug tool.
 - Update GPL license and file headers from gnu.org (https://launchpad.net/bugs/1211145)
 
 
@@ -26,7 +27,7 @@ CHANGES
 - Headless selenium test runner mode, courtesy of PyVirtualDisplay
 - Screenshots configuration
 - Choose browser to use when several are configured
-- Run `bin/test --help` to see all the new Selenium options
+- Run ``bin/test --help`` to see all the new Selenium options
 - i18nextract: Remove sorting by locations, zope.app.locales (>= 3.7.2) does it.
 
 
@@ -73,9 +74,9 @@ CHANGES
 0.5.2 (2009-11-04)
 ------------------
 
-- `i18nextract --egg PACKAGE ...` now supports multiple eggs
+- ``i18nextract --egg PACKAGE ...`` now supports multiple eggs
 - Use python2.5 by default
-- Make `buildout.cfg` extend SchoolTool KGS
+- Make ``buildout.cfg`` extend SchoolTool KGS
 - Add tags and coverage support to buildout
 
 
