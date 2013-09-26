@@ -223,7 +223,7 @@ def doctest_ScriptFactory():
         ...
         BadOptions: "capabilities" for 'remote_opera' should be custom or one of:
           ANDROID, CHROME, FIREFOX, HTMLUNIT, HTMLUNITWITHJS,
-          INTERNETEXPLORER, IPAD, IPHONE, OPERA.
+        ...
 
     Remote driver with custom capabilities.
 
