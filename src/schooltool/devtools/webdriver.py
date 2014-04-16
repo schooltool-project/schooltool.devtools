@@ -55,6 +55,10 @@ class ChromeWebDriver(selenium.webdriver.chrome.webdriver.WebDriver):
                 }
         default_prefs.update(desired_capabilities.get('chrome.prefs', {}))
         desired_capabilities['chrome.prefs'] = default_prefs
+        options = {'prefs': default_prefs}
+        if 'chrome.binary' in desired_capabilities:
+            options['binary'] = desired_capabilities['chrome.binary']
+        desired_capabilities['chromeOptions'] = options
 
         selenium.webdriver.remote.webdriver.WebDriver.__init__(
             self,
