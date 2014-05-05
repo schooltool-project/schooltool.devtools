@@ -2,10 +2,11 @@
 CHANGES
 =======
 
-0.8.1 (unreleased)
+0.8.1 (2014-05-06)
 ------------------
 
-- Nothing changed yet.
+- Fixed downloads directory
+- Make tests compatible with newer versions of selenium
 
 
 0.8.0 (2013-08-23)
